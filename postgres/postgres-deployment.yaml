@@ -1,0 +1,32 @@
+﻿apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    io.kompose.service: postgres
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      io.kompose.service: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        io.kompose.service: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: logistics-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
